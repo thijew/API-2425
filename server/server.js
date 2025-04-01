@@ -48,7 +48,10 @@ app.get('/plant/:id/', async (req, res) => {
   if (!item) {
     return res.status(404).send('Not found');
   }
-  return res.send(renderTemplate('server/views/detail.liquid', { title: `Detail page for ${id}`, item }));
+  return res.send(renderTemplate('server/views/detail.liquid', {
+    title: `Detail page for ${id}`,
+    item: item
+  }));
 });
 
 const renderTemplate = (template, data) => {
