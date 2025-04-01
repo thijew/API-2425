@@ -91,7 +91,7 @@ De beoordelingscriteria zijn te vinden op [DLO](https://dlo.mijnhva.nl/d2l/le/co
 
 ## Inrichten ontwikkelomgeving
 
-1. Navigeer naar [nodejs.org](nodejs.org) en installeer de NodeJS ontwikkelomgeving. Kies voor _NodeJS 22.13.1 with long-term support_, download de benodigde bestanden en doorloop het installatieproces.
+1. Navigeer naar [nodejs.org](https://nodejs.org/en/) en installeer de NodeJS ontwikkelomgeving. Kies voor _NodeJS 22.13.1 with long-term support_, download de benodigde bestanden en doorloop het installatieproces.
 
 2. Fork daarna [deze repository](https://github.com/cmda-minor-web/API-2425) en *clone* deze op jouw computer.
 
