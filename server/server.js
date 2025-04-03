@@ -35,7 +35,7 @@ const app = new App();
 
 app
   .use(logger())
-  .use('/', sirv('dist'))
+  .use('/', sirv(process.env.NODE_ENV === 'development' ? 'client' : 'dist'))
   .listen(3000, () => console.log('Server available on http://localhost:3000'));
 
 app.get('/', async (req, res) => {
