@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import { App } from '@tinyhttp/app';
 import { logger } from '@tinyhttp/logger';
 import { Liquid } from 'liquidjs';
@@ -35,7 +34,7 @@ const app = new App();
 
 app
   .use(logger())
-  .use('/', sirv(process.env.NODE_ENV === 'development' ? 'client' : 'dist'))
+  .use('/', sirv('dist'))
   .listen(3000, () => console.log('Server available on http://localhost:3000'));
 
 app.get('/', async (req, res) => {
@@ -55,11 +54,5 @@ app.get('/plant/:id/', async (req, res) => {
 });
 
 const renderTemplate = (template, data) => {
-  const templateData = {
-    NODE_ENV: process.env.NODE_ENV || 'production',
-    ...data
-  };
-
-  return engine.renderFileSync(template, templateData);
+  return engine.renderFileSync(template, data);
 };
-

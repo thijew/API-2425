@@ -12,13 +12,14 @@
     "dev:server": "nodemon server/server.js --ext js,liquid",
     "prebuild": "npm run clean",
     "build": "npm-run-all build:*",
-    "build:client": "vite build"
+    "build:client": "vite build && cpy 'client/public/**/*' dist"
   },
   "license": "MIT",
   "dependencies": {
     "@tinyhttp/app": "^2.5.2",
     "@tinyhttp/logger": "^2.1.0",
     "chokidar-cli": "^3.0.0",
+    "cpy-cli": "^5.0.0",
     "dotenv": "^16.4.7",
     "liquidjs": "^10.21.0",
     "nodemon": "^3.1.9",
