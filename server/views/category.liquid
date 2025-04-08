@@ -1,0 +1,17 @@
+{% include "server/layouts/base.liquid" %}
+
+{% block content %}
+
+<h1>{{ title }}</h1>
+<ul>
+  {% for entry in alpha %}
+    <li>
+      Letter: {{ entry.letter }} – {{ entry.items }} items
+    </li>
+  {% endfor %}
+</ul>
+
+
+<a href="/">← Terug naar alle categorieën</a>
+
+{% endblock %}
