@@ -4,17 +4,10 @@
   {% for item in items %}
     <li>
       <img src="{{ item.icon }}" alt="{{ item.name }}">
-      {{ item.name }}
+      <strong>{{ item.name }}</strong><br>
       Type: {{ item.type }}
     </li>
   {% endfor %}
 </ul>
 
 <a href="/">← Terug naar alle categorieën</a>
-<ul>
-  {% for cat in categories %}
-    <li><a href="/category/{{ cat.id }}">  {% endfor %}
-    {% for item in items %} {{ item.name }}</a></li>  {% endfor %}
- 
-</ul>
-<a href="/category/:id/:letter?"> See more items</a>

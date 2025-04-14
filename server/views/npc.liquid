@@ -1,0 +1,23 @@
+<h1>{{ title }}</h1>
+
+<img src="{{ imageUrl }}" alt="Avatar van {{ npcName }}" width="128" height="128" />
+
+<p><strong>NPC:</strong> {{ npcName }}</p>
+<p><strong>Appearance String:</strong> {{ appearance }}</p>
+
+{% if error %}
+  <p><em>{{ error }}</em></p>
+{% endif %}
+
+<h2>Worn Items</h2>
+<ul>
+  {% if wornItems %}
+    {% for item in wornItems %}
+      <li>{{ item }}</li>
+    {% endfor %}
+  {% else %}
+    <li><em>Geen gegevens beschikbaar.</em></li>
+  {% endif %}
+</ul>
+
+<a href="/">← Terug naar homepage</a>
