@@ -1,16 +1,16 @@
-{% include "server/layouts/base.liquid" %}
+{% layout "server/layouts/base.liquid" %}
 
 {% block content %}
 
 <h1>{{ title }}</h1>
 <ul>
-  {% for entry in alpha %}
+  {% for item in items %}
     <li>
-      Letter: {{ entry.letter }} – {{ entry.items }} items
+      <img src="{{ item.icon_large }}" alt="{{ item.name }} icon" />
+      <strong>{{ item.name }}</strong> – {{ item.price }} gp
     </li>
   {% endfor %}
 </ul>
-
 
 <a href="/">← Terug naar alle categorieën</a>
 

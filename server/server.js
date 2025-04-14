@@ -64,57 +64,59 @@ app.get('/', async (req, res) => {
   res.send(html);
 });
 
-app.get('/category/:id', async (req, res) => {
+app.get('/category/:id/:letter?', async (req, res) => {
   const categoryId = req.params.id;
+  const alpha = req.params.letter || 'a'; // standaard letter
+  const page = req.query.page || 1;
 
   try {
-    const response = await fetch(
-      `https://secure.runescape.com/m=itemdb_rs/api/catalogue/category.json?category=${categoryId}`
-    );
+    const categoryUrl = `https://services.runescape.com/m=itemdb_rs/api/catalogue/items.json?category=${categoryId}&alpha=${alpha}&page=${page}`;
+    const response = await fetch(categoryUrl);
     const data = await response.json();
-    console.log(categoryId);
 
     const selectedCategory = allCategories.find(c => c.id == categoryId);
 
     const html = await engine.renderFile('server/views/category', {
       title: `Items in ${selectedCategory?.name || 'onbekend'}`,
-      alpha: data.alpha,
-      categoryId
+      items: data.items,               // <-- dit is nieuw
+      alpha,
+      categoryId,
+      selectedCategory,
+      page
+    });
+    console.log(data.items)
+    res.send(html);
+    console.log(Module.avatar.module.ccall("SetAppearance", "void", ["string"], ["AP--AAA-----------------"]));
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Fout bij ophalen van items');
+  }
+});
+
+app.get('/npc/hans', async (req, res) => {
+  const npcAppearance = 'AP--AAA-----------------'; // Hans
+
+  // Of je gebruikt een aangepaste appearance string met echte items
+  const appearanceString = 'AAAAAAABcgABHAEmAWEBIgEqA*SzIwAAAAAAABAQyAAAAAAAAAAAAAAAAAAAAAAKiwAAAA';
+
+  try {
+    const response = await fetch(`https://services.runescape.com/m=adventurers-log/avatardetails.json?details=${npcAppearance}`);
+    const data = await response.json();
+
+    const html = await engine.renderFile('server/views/npc', {
+      title: 'NPC Hans met Gear',
+      npcAppearance: appearanceString,
+      wornItems: data.worn,
+      stats: data,
     });
 
     res.send(html);
   } catch (err) {
     console.error(err);
-    res.status(500).send('Fout bij ophalen van categorie');
+    res.status(500).send('Kon Hans\' items niet ophalen');
   }
 });
 
-
-
-
-// 🧠 Route: Homepage → toon subcategorieën van Ammo
-// app.get('/', async (req, res) => {
-//   try {
-//     const response = await fetch(
-//       'https://secure.runescape.com/m=itemdb_rs/api/catalogue/category.json?category=1'
-//     )
-//     const data = await response.json()
-//     console.log(data)
-
-//     const categories = data.alpha
-
-//     const html = await engine.renderFile('server/views/index.liquid', {
-//       title: 'RuneScape Ammo Categories',
-//       categories,
-//       data,
-//     })
-
-//     res.send(html)
-//   } catch (err) {
-//     console.error(err); // 👈 debug info
-//     res.status(500).send('Fout bij ophalen van data')
-//   }
-// });
 
 app
   .use(logger())
