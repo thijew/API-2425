@@ -1,17 +1,20 @@
-{% layout "server/layouts/base.liquid" %}
+<h1>Categorie: {{ selectedCategory.name }}</h1>
 
-{% block content %}
-
-<h1>{{ title }}</h1>
 <ul>
   {% for item in items %}
     <li>
-      <img src="{{ item.icon_large }}" alt="{{ item.name }} icon" />
-      <strong>{{ item.name }}</strong> – {{ item.price }} gp
+      <img src="{{ item.icon }}" alt="{{ item.name }}">
+      {{ item.name }}
+      Type: {{ item.type }}
     </li>
   {% endfor %}
 </ul>
 
 <a href="/">← Terug naar alle categorieën</a>
-
-{% endblock %}
+<ul>
+  {% for cat in categories %}
+    <li><a href="/category/{{ cat.id }}">  {% endfor %}
+    {% for item in items %} {{ item.name }}</a></li>  {% endfor %}
+ 
+</ul>
+<a href="/category/:id/:letter?"> See more items</a>

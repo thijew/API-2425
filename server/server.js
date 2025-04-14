@@ -9,89 +9,129 @@ const engine = new Liquid({
 
 const app = new App();
 
-const allCategories = [
-  { id: 0, name: "Miscellaneous" },
-  { id: 1, name: "Ammo" },
-  { id: 2, name: "Arrows" },
-  { id: 3, name: "Bolts" },
-  { id: 4, name: "Construction materials" },
-  { id: 5, name: "Construction products" },
-  { id: 6, name: "Cooking ingredients" },
-  { id: 7, name: "Costumes" },
-  { id: 8, name: "Crafting materials" },
-  { id: 9, name: "Familiars" },
-  { id: 10, name: "Farming produce" },
-  { id: 11, name: "Fletching materials" },
-  { id: 12, name: "Food and Drink" },
-  { id: 13, name: "Herblore materials" },
-  { id: 14, name: "Hunting equipment" },
-  { id: 15, name: "Hunting Produce" },
-  { id: 16, name: "Jewellery" },
-  { id: 17, name: "Mage armour" },
-  { id: 18, name: "Mage weapons" },
-  { id: 19, name: "Melee armour - low level" },
-  { id: 20, name: "Melee armour - mid level" },
-  { id: 21, name: "Melee armour - high level" },
-  { id: 22, name: "Melee weapons - low level" },
-  { id: 23, name: "Melee weapons - mid level" },
-  { id: 24, name: "Melee weapons - high level" },
-  { id: 25, name: "Mining and Smithing" },
-  { id: 26, name: "Potions" },
-  { id: 27, name: "Prayer armour" },
-  { id: 28, name: "Prayer materials" },
-  { id: 29, name: "Range armour" },
-  { id: 30, name: "Range weapons" },
-  { id: 31, name: "Runecrafting" },
-  { id: 32, name: "Runes, Spells and Teleports" },
-  { id: 33, name: "Seeds" },
-  { id: 34, name: "Summoning scrolls" },
-  { id: 35, name: "Tools and containers" },
-  { id: 36, name: "Woodcutting product" },
-  { id: 37, name: "Pocket items" },
-  { id: 38, name: "Stone spirits" },
-  { id: 39, name: "Salvage" },
-  { id: 40, name: "Firemaking products" },
-  { id: 41, name: "Archaeology materials" },
-  { id: 42, name: "Wood spirits" },
-  { id: 43, name: "Necromancy armour" }
-];
+const categoryNames = {
+  0: "Miscellaneous",
+  1: "Ammo",
+  2: "Arrows",
+  3: "Bolts",
+  4: "Construction materials",
+  5: "Construction products",
+  6: "Cooking ingredients",
+  7: "Costumes",
+  8: "Crafting materials",
+  9: "Familiars",
+  10: "Farming produce",
+  11: "Fletching materials",
+  12: "Food and Drink",
+  13: "Herblore materials",
+  14: "Hunting equipment",
+  15: "Hunting Produce",
+  16: "Jewellery",
+  17: "Mage armour",
+  18: "Mage weapons",
+  19: "Melee armour - low level",
+  20: "Melee armour - mid level",
+  21: "Melee armour - high level",
+  22: "Melee weapons - low level",
+  23: "Melee weapons - mid level",
+  24: "Melee weapons - high level",
+  25: "Mining and Smithing",
+  26: "Potions",
+  27: "Prayer armour",
+  28: "Prayer materials",
+  29: "Range armour",
+  30: "Range weapons",
+  31: "Runecrafting",
+  32: "Runes, Spells and Teleports",
+  33: "Seeds",
+  34: "Summoning scrolls",
+  35: "Tools and containers",
+  36: "Woodcutting product",
+  37: "Pocket items",
+  38: "Stone spirits",
+  39: "Salvage",
+  40: "Firemaking products",
+  41: "Archaeology materials",
+  42: "Wood spirits",
+  43: "Necromancy armour"
+};
+
+
 
 app.get('/', async (req, res) => {
+  // Zet de map om in een array van categorieën
+  const categories = Object.entries(categoryNames).map(([id, name]) => ({
+    id: Number(id),
+    name
+  }));
+
+
   const html = await engine.renderFile('server/views/index', {
     title: 'RuneScape GE Categories',
-    categories: allCategories,
+    categories
   });
+
   res.send(html);
 });
 
+
+
 app.get('/category/:id/:letter?', async (req, res) => {
   const categoryId = req.params.id;
-  const alpha = req.params.letter || 'a'; // standaard letter
+  const alpha = req.params.letter || 'a';
   const page = req.query.page || 1;
 
   try {
+    // Haal dynamisch de categorieën op
+    const categories = Object.entries(categoryNames).map(([id, name]) => ({
+      id: Number(id),
+      name
+    }));
+    const selectedCategory = categories.find(c => c.id == Number(categoryId));
+
+
     const categoryUrl = `https://services.runescape.com/m=itemdb_rs/api/catalogue/items.json?category=${categoryId}&alpha=${alpha}&page=${page}`;
     const response = await fetch(categoryUrl);
     const data = await response.json();
+    console.log(data);
 
-    const selectedCategory = allCategories.find(c => c.id == categoryId);
+    // Voeg "type" toe per item (detail endpoint)
+    const itemsWithDetails = await Promise.all(
+      data.items.map(async item => {
+        const detailUrl = `https://services.runescape.com/m=itemdb_rs/api/catalogue/detail.json?item=${item.id}`;
+        try {
+          const detailResponse = await fetch(detailUrl);
+          const detailData = await detailResponse.json();
+          return {
+            ...item,
+            type: detailData.item?.type || 'Onbekend'
+          };
+        } catch {
+          return {
+            ...item,
+            type: 'Onbekend'
+          };
+        }
+      })
+    );
 
     const html = await engine.renderFile('server/views/category', {
-      title: `Items in ${selectedCategory?.name || 'onbekend'}`,
-      items: data.items,               // <-- dit is nieuw
+      title: `Items in ${selectedCategory?.name || 'Onbekend'}`,
+      categories,
+      selectedCategory,
+      items: itemsWithDetails,
       alpha,
       categoryId,
-      selectedCategory,
       page
     });
-    console.log(data.items)
+
     res.send(html);
-    console.log(Module.avatar.module.ccall("SetAppearance", "void", ["string"], ["AP--AAA-----------------"]));
   } catch (err) {
     console.error(err);
-    res.status(500).send('Fout bij ophalen van items');
+    res.status(500).send('Fout bij ophalen van categorieën of items');
   }
 });
+
 
 app.get('/npc/hans', async (req, res) => {
   const npcAppearance = 'AP--AAA-----------------'; // Hans
