@@ -2,8 +2,11 @@ header {
   padding: 1rem;
 }
 
-main{
-  
+.left {
+  max-width: 50dvw;
+}
+.right {
+  max-width: -50dvw;
 }
 
 footer {

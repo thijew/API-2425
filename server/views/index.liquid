@@ -4,10 +4,13 @@
 
 <h1>{{ title }}</h1>
 
+<div class="left">
 <ul>
   {% for cat in categories %}
     <li><a href="/category/{{ cat.id }}">{{ cat.name }}</a></li>
   {% endfor %}
 </ul>
+</div> 
+
 
 {% endblock %}

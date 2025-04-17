@@ -91,84 +91,12 @@ app.get('/category/:id/:letter?', async (req, res) => {
   }
 });
 
-app.get('/npc/custom', async (req, res) => {
-  const { name, appearance } = req.query;
 
-  if (!name || !appearance) {
-    // Laat het invoerformulier zien
-    const html = await engine.renderFile('server/views/npc-custom.liquid', {
-      title: 'Custom NPC Viewer',
-      showResult: false
-    });
-    return res.send(html);
-  }
-
-  const detailsUrl = `https://services.runescape.com/m=adventurers-log/avatardetails.json?details=${appearance}`;
-  const imageUrl = `https://secure.runescape.com/m=avatar-rs/${encodeURIComponent(name)}/chat.png`;
-
-  try {
-    const response = await fetch(detailsUrl);
-    let data = null;
-    if (response.ok) {
-      data = await response.json();
-    }
-
-    const html = await engine.renderFile('server/view/npc-custom', {
-      title: 'Custom NPC Viewer',
-      npcName: name,
-      appearance,
-      imageUrl,
-      wornItems: data?.worn || [],
-      showResult: true
-    });
-
-    res.send(html);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Fout bij ophalen van appearance-data.');
-  }
-});
-
-
-app.get('/npc/hans', async (req, res) => {
-  const hansAppearance = 'a112a';
-  const detailsUrl = `https://services.runescape.com/m=adventurers-log/avatardetails.json?details=${hansAppearance}`;
-  const imageUrl = `https://secure.runescape.com/m=avatar-rs/Hans/chat.png`;
-
-  try {
-    const response = await fetch(detailsUrl);
-
-    if (!response.ok) {
-      console.error(`Fout bij ophalen van avatardetails: ${response.status}`);
-      return res.send(await engine.renderFile('server/views/npc.liquid', {
-        title: 'NPC Viewer – Hans',
-        npcName: 'Hans',
-        imageUrl,
-        wornItems: null,
-        appearance: hansAppearance,
-        error: 'Geen gegevens beschikbaar voor deze NPC.'
-      }));
-    }
-    const data = await response.json();
-
-    const html = await engine.renderFile('/server/views/npc.liquid', {
-      title: 'NPC Viewer – Hans',
-      npcName: 'Hans',
-      imageUrl,
-      wornItems: data.worn || [],
-      appearance: hansAppearance
-    });
-
-    res.send(html);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Kon de NPC-gegevens niet ophalen.');
-  }
-});
 
 
 
 app
   .use(logger())
   .use('/', sirv('dist'))
+  .use('/static', sirv('static'))
   .listen(3000, () => console.log('Server available on http://localhost:3000'));
